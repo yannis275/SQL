@@ -4,7 +4,6 @@ DROP DATABASE IF EXISTS bdd_communal_rooms_booking_exemple_test;
 CREATE DATABASE bdd_communal_rooms_booking_exemple_test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE bdd_communal_rooms_booking_exemple_test;
-
 -- Requête 2
 DROP TABLE IF EXISTS buildings;
 
@@ -189,7 +188,7 @@ VALUES (
         'user',
         '2026-08-30 09:30:00'
     );
-
+-- Requete 10 --
 INSERT INTO
     reservations (
         room_id,
@@ -263,3 +262,47 @@ VALUES (
         'confirmé',
         'Assemblée associative'
     );
+    -- Requete 11 Lister les salles --
+    SELECT *
+    FROM rooms 
+    WHERE capacity > 50;
+    
+    -- Requete 12 Afficher les reservations -- 
+    SELECT *
+    FROM reservations
+    WHERE start_datetime >= NOW() - INTERVAL 7 DAY;
+    
+    -- Requete 13 Afficher le nombre de reservations par salle -- 
+    SELECT rooms.name, COUNT(reservations.id) AS nombre_reservations
+    FROM rooms 
+    LEFT JOIN reservations ON rooms.id = reservations.room_id
+    GROUP BY rooms.id, rooms.name;
+    
+    -- Requete 14 Capacite moyenne des salles -- 
+    SELECT buildings.address, AVG(rooms.capacity) AS capacite_moyenne
+    FROM buildings
+    INNER JOIN rooms ON buildings.id = rooms.building_id
+    GROUP BY buildings.id, buildings.address;
+    
+    -- Requete 15 Trouver la salle la + reservee -- 
+    SELECT rooms.name, COUNT(reservations.id) AS nombre_reservations
+    FROM rooms
+    INNER JOIN reservations ON rooms.id = reservations.room_id
+    GROUP BY rooms.id, rooms.name
+    ORDER BY nombre_reservations DESC 
+    LIMIT 1;
+    
+    -- Requete 16 Trouver la saalle jamais reservee -- 
+    SELECT rooms.name
+    FROM rooms
+    LEFT JOIN reservations on rooms.id = reservations.room_id
+    WHERE reservations.id IS NULL;
+    
+    -- Critere de validation --
+	 -- DELETE FROM buildings  WHERE id = 1; -- 
+    -- Erreur SQL (1451) -- 
+    
+	 -- INSERT INTO reservations (room_id, user_id, start_datetime, duration_minutes, STATUS,reason ) --
+    -- VALUES (999, 2, '2026-11-26 14:00:00', 60, 'confirme', 'Test de validation' ); -- 
+   -- Erreur SQL (1452) Cle etrangere inexistante --
+   
